@@ -20,7 +20,12 @@ public class Waypoint : CarTarget
 	{
 		foreach(Car controlledCar in controlledCars)
 		{
-			float forwardThrottle = Mathf.Lerp(controlledCar.LastCarTarget.ThrottlePercentage, controlledCar.CurrentCarTarget.ThrottlePercentage, controlledCar.PercentageToNextTarget);
+			float forwardThrottle = 1;
+			if(controlledCar.LastCarTarget)
+			{
+				Mathf.Lerp(controlledCar.LastCarTarget.ThrottlePercentage, controlledCar.CurrentCarTarget.ThrottlePercentage, controlledCar.PercentageToNextTarget);
+			}
+			Debug.Log(forwardThrottle);
 			controlledCar.DriveForward(forwardThrottle);
 		}
 	}
@@ -38,10 +43,14 @@ public class Waypoint : CarTarget
 			Gizmos.DrawRay(headPos, right * 1);
 			Gizmos.DrawRay(headPos, left * 1);
 		}
-		Gizmos.DrawWireSphere(transform.position, 0.1f);
 		foreach(Waypoint nextWaypoint in nextWaypoints)
 		{
-			DrawArrow(gameObject.transform.position, nextWaypoint.transform.position);
+			if(nextWaypoint)
+			{
+				DrawArrow(gameObject.transform.position, nextWaypoint.transform.position);
+			}
 		}
+		
+		Gizmos.DrawIcon(transform.position, "waypoint.jpg", true);
 	}
 }

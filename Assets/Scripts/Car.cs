@@ -27,7 +27,6 @@ public class Car : MonoBehaviour
     private Vector3 DirectionToTarget => (currentCarTarget.transform.position - transform.position).normalized;
 
     private bool onGround;
-    private Vector3 averageContactNormal;
 
     public float PercentageToNextTarget
     {
@@ -52,13 +51,6 @@ public class Car : MonoBehaviour
     private void OnCollisionStay(Collision other)
     {
         onGround = true;
-        Vector3 averageNormal = new Vector3();
-        List<ContactPoint> contactPoints = other.contacts.ToList();
-        for(int i = 0; i < other.contactCount; i++)
-        {
-            averageNormal += contactPoints[i].normal;
-        }
-        averageContactNormal = Vector3.Lerp(averageContactNormal, averageNormal / other.contactCount, 0.01f);
     }
 
     private Rigidbody rb;
@@ -83,17 +75,17 @@ public class Car : MonoBehaviour
     {
         if(rb)
         {
-            Vector3 torqueToAdd = Vector3.up * (Vector3.Dot(transform.right, DirectionToTarget) * steerTorque) - Vector3.up * (rb.angularVelocity.x * steeringDamping);
+            Vector3 torqueToAdd = Vector3.up * (Vector3.Dot(transform.right, DirectionToTarget) * steerTorque) - Vector3.up * (rb.angularVelocity.y * steeringDamping);
             rb.AddRelativeTorque(torqueToAdd);
         }
     }
     
     private void KeepUpright()
     {
-        if(onGround)
+        if(Vector3.Angle(transform.up, Vector3.up) > 30f)
         {
-            Quaternion rot = Quaternion.FromToRotation(transform.up, averageContactNormal);
-            rb.AddRelativeTorque(new Vector3(rot.x, 0, 0) * balanceTorque);
+            Quaternion rot = Quaternion.FromToRotation(transform.up, Vector3.up);
+            rb.AddRelativeTorque(new Vector3(rot.x, 0, rot.z) * balanceTorque);
         }
     }
     
