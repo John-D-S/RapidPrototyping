@@ -38,7 +38,7 @@ public class Waypoint : CarTarget
 			Gizmos.DrawRay(headPos, right * 1);
 			Gizmos.DrawRay(headPos, left * 1);
 		}
-
+		Gizmos.DrawWireSphere(transform.position, 0.1f);
 		foreach(Waypoint nextWaypoint in nextWaypoints)
 		{
 			DrawArrow(gameObject.transform.position, nextWaypoint.transform.position);

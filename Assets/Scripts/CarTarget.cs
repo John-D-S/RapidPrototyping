@@ -4,7 +4,7 @@ using UnityEngine;
 
 public abstract class CarTarget : MonoBehaviour
 {
-    [System.NonSerialized] public List<Car> controlledCars;
+    [System.NonSerialized] public List<Car> controlledCars = new List<Car>();
     [SerializeField, Range(0, 1)] private float throttlePercentage;
     public float ThrottlePercentage => throttlePercentage;
     public abstract void ReachTarget(ref Car _car);

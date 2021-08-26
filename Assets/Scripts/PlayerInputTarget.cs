@@ -8,13 +8,13 @@ using UnityEngine;
 public class PlayerInputTarget : CarTarget
 {
 	private float currentThrottle = 0;
-	private float throttleModifier = 0;
+	private float throttleModifier = 1;
 	public override void ReachTarget(ref Car _car)
 	{
-		if(controlledCars.Contains(_car))
-		{
-			throttleModifier = 0;
-		}
+		//if(controlledCars.Contains(_car))
+		//{
+		//	throttleModifier = 0;
+		//}
 	}
 
 	private Vector3 MousePositionOverTerrain()
@@ -37,6 +37,7 @@ public class PlayerInputTarget : CarTarget
 		UpdateTargetPosition();
 		if(Input.GetMouseButton(0))
 		{
+			//Debug.Log(throttleModifier);
 			currentThrottle = ThrottlePercentage * throttleModifier;
 		}
 		else
@@ -49,6 +50,7 @@ public class PlayerInputTarget : CarTarget
 	{
 		foreach(Car car in controlledCars)
 		{
+			//Debug.Log(currentThrottle);
 			car.DriveForward(currentThrottle);
 		}
 	}

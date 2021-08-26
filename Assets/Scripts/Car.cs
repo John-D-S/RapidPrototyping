@@ -21,7 +21,8 @@ public class Car : MonoBehaviour
     [Header("-- Misc Physics forces --")]
     [SerializeField] private float balanceTorque;
     [SerializeField] private float sidewaysFriction;
-    
+    [SerializeField] private float steeringDamping;
+
     private bool IsCloseEnoughToTarget => Vector3.Distance(currentCarTarget.transform.position, transform.position) < nearTargetDistance;
     private Vector3 DirectionToTarget => (currentCarTarget.transform.position - transform.position).normalized;
 
@@ -57,7 +58,7 @@ public class Car : MonoBehaviour
         {
             averageNormal += contactPoints[i].normal;
         }
-        averageContactNormal = averageNormal / other.contactCount;
+        averageContactNormal = Vector3.Lerp(averageContactNormal, averageNormal / other.contactCount, 0.01f);
     }
 
     private Rigidbody rb;
@@ -70,7 +71,10 @@ public class Car : MonoBehaviour
 
     public void SetCarTarget(CarTarget _target)
     {
-        currentCarTarget.controlledCars.Remove(this);
+        if(currentCarTarget)
+        {
+            currentCarTarget.controlledCars.Remove(this);
+        }
         currentCarTarget = _target;
         currentCarTarget.controlledCars.Add(this);
     }
@@ -79,7 +83,8 @@ public class Car : MonoBehaviour
     {
         if(rb)
         {
-            rb.AddRelativeTorque(Vector3.up * (Vector3.Dot(transform.right, DirectionToTarget) * steerTorque));
+            Vector3 torqueToAdd = Vector3.up * (Vector3.Dot(transform.right, DirectionToTarget) * steerTorque) - Vector3.up * (rb.angularVelocity.x * steeringDamping);
+            rb.AddRelativeTorque(torqueToAdd);
         }
     }
     
@@ -88,7 +93,7 @@ public class Car : MonoBehaviour
         if(onGround)
         {
             Quaternion rot = Quaternion.FromToRotation(transform.up, averageContactNormal);
-            rb.AddRelativeTorque(new Vector3(rot.x, rot.y, rot.z) * balanceTorque);
+            rb.AddRelativeTorque(new Vector3(rot.x, 0, 0) * balanceTorque);
         }
     }
     
